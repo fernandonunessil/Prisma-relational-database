@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,5 +7,30 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model City {
+  id   Int    @id @default(autoincrement())
+  name String
+  cep  String @unique
+  User User[]
+}
 
+model Country {
+  id        Int    @id @default(autoincrement())
+  name      String @unique
+  continent String
+  User      User[]
+}
 
+model User {
+  id        Int     @id @default(autoincrement())
+  name      String
+  username  String  @unique
+  password  String  @unique
+  cityId    Int
+  countryId Int
+  City      City    @relation(fields: [cityId], references: [id])
+  Country   Country @relation(fields: [countryId], references: [id])
+
+  @@index([cityId], map: "User_cityId_fkey")
+  @@index([countryId], map: "User_countryId_fkey")
+}
